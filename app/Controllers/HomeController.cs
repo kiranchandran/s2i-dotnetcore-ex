@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace app.Controllers
 {
-public class PermissionsRequest
+  public class PermissionsRequest
   {
 
     [JsonProperty("opt_context")]
@@ -54,35 +54,91 @@ public class PermissionsRequest
     [JsonProperty("contextOut")]
     public IList<object> ContextOut { get; set; }
   }
-  
-    public class HomeController : Controller
+
+  public class HomeController : Controller
+  {
+
+    string respones = @"{
+  'fulfillmentText': 'Dipu, This is a text response for Dipus testing',
+  'fulfillmentMessages': [
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+      'card': {
+        'title': 'card title',
+        'subtitle': 'card text',
+        'imageUri': 'https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png',
+        'buttons': [
+          {
+            'text': 'button text',
+            'postback': 'https://assistant.google.com/'
+          }
+        ]
+      }
+    }
+  ],
+  'source': 'example.com',
+  'payload': {
+    'google': {
+      'expectUserResponse': true,
+      'richResponse': {
+        'items': [
+          {
+            'simpleResponse': {
+              'textToSpeech': 'Dipu, this is a simple response for Dipu'
+            }
+          }
+        ]
+      }
+    },
+    'facebook': {
+      'text': 'Hello, Facebook!'
+    },
+    'slack': {
+      'text': 'This is a text response for Slack.'
+    }
+  },
+  'outputContexts': [
+    {
+      'name': 'projects/${PROJECT_ID}/agent/sessions/${SESSION_ID}/contexts/context name',
+      'lifespanCount': 5,
+      'parameters': {
+        'param': 'param value'
+      }
+    }
+  ],
+  'followupEventInput': {
+    'name': 'event name',
+    'languageCode': 'en-US',
+    'parameters': {
+      'param': 'param value'
+    }
+  }
+}";
+    public IActionResult Index()
+    {
+      return View();
+    }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
+    public IActionResult About()
+    {
+      ViewData["Message"] = "Your application description page.";
 
-            return View();
-        }
+      return View();
+    }
 
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
+    public IActionResult Contact()
+    {
+      ViewData["Message"] = "Your contact page.";
 
-            return View();
-        }
+      return View();
+    }
 
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    public IActionResult Error()
+    {
+      return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
 
-       public IActionResult GetSpeechJson()
-        {
+    public IActionResult GetSpeechJson()
+    {
       //GoogleSpeechModel model = new GoogleSpeechModel();
       //model.Speech = "Hello Deepu, this is from hosted web service.";
       //model.DisplayText = "Hello Deepu, this is the display from hosted web service.";
@@ -111,5 +167,17 @@ public class PermissionsRequest
       GoogleSpeechModel model = JsonConvert.DeserializeObject<GoogleSpeechModel>(data);
       return Ok(model);
     }
+
+    [HttpPost]
+    public IActionResult GoogleSpeechWebhookPost(GoogleSpeechRequest request)
+    {
+      Models.Response.GoogleSpeechResponse model = JsonConvert.DeserializeObject<Models.Response.GoogleSpeechResponse>(respones);
+      return Ok(model);
     }
+    public IActionResult GoogleSpeechWebhookGet()
+    {
+      Models.Response.GoogleSpeechResponse model = JsonConvert.DeserializeObject<Models.Response.GoogleSpeechResponse>(respones);
+      return Ok(model);
+    }
+  }
 }
